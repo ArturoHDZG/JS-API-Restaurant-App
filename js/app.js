@@ -1,5 +1,4 @@
 //* Selectors
-const saucers = document.querySelector('#platillos');
 const resume = document.querySelector('#resumen');
 const order = document.querySelector('#guardar-cliente');
 
@@ -8,6 +7,12 @@ let costumer = {
   mesa: '',
   hora: '',
   order: []
+};
+
+const categories = {
+  1: 'Comida',
+  2: 'Bebidas',
+  3: 'Postres'
 };
 
 //* Event Listeners
@@ -38,5 +43,62 @@ function saveOrder() {
     const modalForm = document.querySelector('#formulario');
     const modalBootstrap = bootstrap.Modal.getInstance(modalForm);
     modalBootstrap.hide();
+
+    displaySections();
+    getSaucers();
   }
+}
+
+function displaySections() {
+  const hideSections = document.querySelectorAll('.d-none');
+  hideSections.forEach(section => section.classList.remove('d-none'));
+}
+
+function getSaucers() {
+  const URL = 'http://localhost:4000/platillos';
+
+  fetch(URL)
+    .then(response => response.json())
+    .then(data => displaySaucers(data));
+}
+
+function displaySaucers(saucers) {
+  const content = document.querySelector('#platillos .contenido');
+
+  saucers.forEach(sauce => {
+    const { id, nombre, precio, categoria } = sauce;
+
+    const row = document.createElement('DIV');
+    row.classList.add('row', 'border-top', 'py-3');
+
+    const name = document.createElement('DIV');
+    name.classList.add('col-md-4');
+    name.textContent = nombre;
+    row.appendChild(name);
+
+    const price = document.createElement('DIV');
+    price.classList.add('col-md-3', 'fw-bold');
+    price.textContent = `$${precio}`;
+    row.appendChild(price);
+
+    const category = document.createElement('DIV');
+    category.classList.add('col-md-3');
+    category.textContent = categories[categoria];
+    row.appendChild(category);
+
+    const quantity = document.createElement('INPUT');
+    quantity.classList.add('form-control');
+    quantity.type = 'number';
+    quantity.min = 0;
+    quantity.max = 100;
+    quantity.value = 0;
+    quantity.id = `producto-${id}`;
+
+    const quantityDIV = document.createElement('DIV');
+    quantityDIV.classList.add('col-md-2');
+    quantityDIV.appendChild(quantity);
+    row.appendChild(quantityDIV);
+
+    content.appendChild(row);
+  });
 }
