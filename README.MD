@@ -4,8 +4,6 @@
 
 2024-08-21: PROJECT START
 
-2024-08-21: PROJECT END
-
 This project is a learning exercise aimed at creating an efficient and user-friendly system for restaurants bill using an API. It allows users to calculate bills and tips for each consumer.
 
 ## Features
@@ -35,6 +33,6 @@ Check out the live demo of the Restaurant App [here](https://arturohdzg.github.i
 
 ## Additional Info
 
-_API make on [JSON Server](https://github.com/typicode/json-server)_
+_API made on [JSON Server](https://github.com/typicode/json-server)_
 
 Feel free to explore the code and provide feedback. Happy coding! 🚀
