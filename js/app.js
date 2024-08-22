@@ -1,12 +1,12 @@
 //* Selectors
 const resume = document.querySelector('#resumen');
-const order = document.querySelector('#guardar-cliente');
+const newOrder = document.querySelector('#guardar-cliente');
 
 //* Variables
 let costumer = {
   mesa: '',
   hora: '',
-  order: []
+  orden: []
 };
 
 const categories = {
@@ -16,7 +16,7 @@ const categories = {
 };
 
 //* Event Listeners
-order.addEventListener('click', saveOrder);
+newOrder.addEventListener('click', saveOrder);
 
 //* Functions
 function saveOrder() {
@@ -65,8 +65,8 @@ function getSaucers() {
 function displaySaucers(saucers) {
   const content = document.querySelector('#platillos .contenido');
 
-  saucers.forEach(sauce => {
-    const { id, nombre, precio, categoria } = sauce;
+  saucers.forEach(saucer => {
+    const { id, nombre, precio, categoria } = saucer;
 
     const row = document.createElement('DIV');
     row.classList.add('row', 'border-top', 'py-3');
@@ -86,19 +86,47 @@ function displaySaucers(saucers) {
     category.textContent = categories[categoria];
     row.appendChild(category);
 
-    const quantity = document.createElement('INPUT');
-    quantity.classList.add('form-control');
-    quantity.type = 'number';
-    quantity.min = 0;
-    quantity.max = 100;
-    quantity.value = 0;
-    quantity.id = `producto-${id}`;
+    const quantityInput = document.createElement('INPUT');
+    quantityInput.classList.add('form-control');
+    quantityInput.type = 'number';
+    quantityInput.min = 0;
+    quantityInput.max = 100;
+    quantityInput.value = 0;
+    quantityInput.id = `producto-${id}`;
+
+    quantityInput.onchange = function () {
+      const cantidad = parseInt(quantityInput.value, 10);
+      updateOrder({...saucer, cantidad});
+    };
 
     const quantityDIV = document.createElement('DIV');
     quantityDIV.classList.add('col-md-2');
-    quantityDIV.appendChild(quantity);
+    quantityDIV.appendChild(quantityInput);
     row.appendChild(quantityDIV);
 
     content.appendChild(row);
   });
+}
+
+function updateOrder(addOrder) {
+  let { orden } = costumer;
+
+  if (addOrder.cantidad > 0) {
+    if (orden.some(saucer => saucer.id === addOrder.id)) {
+      const orderUpdated = orden.map(saucer => {
+        if (saucer.id === addOrder.id) {
+          saucer.cantidad = addOrder.cantidad;
+        }
+        return saucer;
+      });
+      costumer.orden = [ ...orderUpdated ];
+    } else {
+      costumer.orden = [ ...orden, addOrder ];
+    }
+
+  } else {
+    console.log('Orden en 0');
+  }
+
+  console.log(costumer.orden);
 }
