@@ -129,7 +129,12 @@ function updateOrder(addOrder) {
   }
 
   clearHTML();
-  displayResume();
+
+  if (costumer.orden.length) {
+    displayResume();
+  } else {
+    emptyOrderMsg();
+  }
 }
 
 function displayResume() {
@@ -199,6 +204,13 @@ function displayResume() {
     subTotalSpan.classList.add('fw-normal');
     subTotalSpan.textContent = calculateSubtotal(precio, cantidad);
 
+    const deleteBtn = document.createElement('BUTTON');
+    deleteBtn.classList.add('btn', 'btn-danger');
+    deleteBtn.textContent = 'Eliminar producto';
+    deleteBtn.onclick = function () {
+      deleteSaucer(id);
+    };
+
     quantity.appendChild(quantitySpan);
     price.appendChild(priceSpan);
     subTotal.appendChild(subTotalSpan);
@@ -207,6 +219,7 @@ function displayResume() {
     list.appendChild(quantity);
     list.appendChild(price);
     list.appendChild(subTotal);
+    list.appendChild(deleteBtn);
 
     saucerGroup.appendChild(list);
   });
@@ -219,6 +232,23 @@ function displayResume() {
   content.appendChild(resume);
 }
 
+function deleteSaucer(id) {
+  const saucerToDelete = costumer.orden.findIndex(saucer => saucer.id === id);
+  costumer.orden.splice(saucerToDelete, 1);
+
+  clearHTML();
+
+  if (costumer.orden.length) {
+    displayResume();
+  } else {
+    emptyOrderMsg();
+  }
+
+  const deletedSaucer = `#producto-${id}`;
+  const deletedInput = document.querySelector(deletedSaucer);
+  deletedInput.value = 0;
+}
+
 function clearHTML() {
   const content = document.querySelector('#resumen .contenido');
 
@@ -229,4 +259,13 @@ function clearHTML() {
 
 function calculateSubtotal(price, quantity) {
   return `$${price * quantity}`;
+}
+
+function emptyOrderMsg() {
+  const content = document.querySelector('#resumen .contenido');
+  const emptyMsg = document.createElement('P');
+  emptyMsg.classList.add('text-center');
+  emptyMsg.textContent = 'No hay productos en la orden';
+
+  content.appendChild(emptyMsg);
 }
