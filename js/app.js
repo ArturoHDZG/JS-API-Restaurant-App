@@ -1,5 +1,4 @@
 //* Selectors
-const resume = document.querySelector('#resumen');
 const newOrder = document.querySelector('#guardar-cliente');
 
 //* Variables
@@ -125,8 +124,109 @@ function updateOrder(addOrder) {
     }
 
   } else {
-    console.log('Orden en 0');
+    const noSaucer = orden.filter(saucer => saucer.id !== addOrder.id);
+    costumer.orden = [ ...noSaucer ];
   }
 
-  console.log(costumer.orden);
+  clearHTML();
+  displayResume();
+}
+
+function displayResume() {
+  const { mesa, hora, orden } = costumer;
+  const content = document.querySelector('#resumen .contenido');
+
+  const resume = document.createElement('DIV');
+  resume.classList.add('col-md-6', 'card', 'py-5', 'px-3', 'shadow');
+
+  const table = document.createElement('P');
+  table.classList.add('fw-bold');
+  table.textContent = 'Mesa: ';
+
+  const tableSpan = document.createElement('SPAN');
+  tableSpan.classList.add('fw-normal');
+  tableSpan.textContent = mesa;
+
+  const time = document.createElement('P');
+  time.classList.add('fw-bold');
+  time.textContent = 'Hora: ';
+
+  const timeSpan = document.createElement('SPAN');
+  timeSpan.classList.add('fw-normal');
+  timeSpan.textContent = hora;
+
+  const orderH3 = document.createElement('H3');
+  orderH3.classList.add('my-4', 'text-center');
+  orderH3.textContent = 'Orden:';
+
+  table.appendChild(tableSpan);
+  time.appendChild(timeSpan);
+
+  const saucerGroup = document.createElement('UL');
+  saucerGroup.classList.add('list-group');
+
+  orden.forEach(saucer => {
+    const { id, nombre, precio, cantidad } = saucer;
+
+    const list = document.createElement('LI');
+    list.classList.add('list-group-item');
+
+    const name = document.createElement('H4');
+    name.classList.add('my-4');
+    name.textContent = nombre;
+
+    const quantity = document.createElement('P');
+    quantity.classList.add('fw-bold');
+    quantity.textContent = 'Cantidad: ';
+
+    const quantitySpan = document.createElement('SPAN');
+    quantitySpan.classList.add('fw-normal');
+    quantitySpan.textContent = cantidad;
+
+    const price = document.createElement('P');
+    price.classList.add('fw-bold');
+    price.textContent = 'Precio: ';
+
+    const priceSpan = document.createElement('SPAN');
+    priceSpan.classList.add('fw-normal');
+    priceSpan.textContent = '$'+precio;
+
+    const subTotal = document.createElement('P');
+    subTotal.classList.add('fw-bold');
+    subTotal.textContent = 'Subtotal: ';
+
+    const subTotalSpan = document.createElement('SPAN');
+    subTotalSpan.classList.add('fw-normal');
+    subTotalSpan.textContent = calculateSubtotal(precio, cantidad);
+
+    quantity.appendChild(quantitySpan);
+    price.appendChild(priceSpan);
+    subTotal.appendChild(subTotalSpan);
+
+    list.appendChild(name);
+    list.appendChild(quantity);
+    list.appendChild(price);
+    list.appendChild(subTotal);
+
+    saucerGroup.appendChild(list);
+  });
+
+  resume.appendChild(table);
+  resume.appendChild(time);
+  resume.appendChild(orderH3);
+  resume.appendChild(saucerGroup);
+
+  content.appendChild(resume);
+}
+
+function clearHTML() {
+  const content = document.querySelector('#resumen .contenido');
+
+  while (content.firstChild) {
+    content.removeChild(content.firstChild);
+  }
+}
+
+function calculateSubtotal(price, quantity) {
+  return `$${price * quantity}`;
 }
