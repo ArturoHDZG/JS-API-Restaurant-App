@@ -1,4 +1,5 @@
 //* Selectors
+const content = document.querySelector('#resumen .contenido');
 const newOrder = document.querySelector('#guardar-cliente');
 
 //* Variables
@@ -13,6 +14,9 @@ const categories = {
   2: 'Bebidas',
   3: 'Postres'
 };
+
+//* Constants
+const TEXT_CENTER = 'text-center';
 
 //* Event Listeners
 newOrder.addEventListener('click', saveOrder);
@@ -31,7 +35,7 @@ function saveOrder() {
 
     const ALERT_DURATION = 3000;
     const alert = document.createElement('DIV');
-    alert.classList.add('invalid-feedback', 'd-block', 'text-center');
+    alert.classList.add('invalid-feedback', 'd-block', TEXT_CENTER);
     alert.textContent = 'Todos los campos son obligatorios';
     document.querySelector('.modal-body form').appendChild(alert);
     setTimeout(() => alert.remove(), ALERT_DURATION);
@@ -62,7 +66,7 @@ function getSaucers() {
 }
 
 function displaySaucers(saucers) {
-  const content = document.querySelector('#platillos .contenido');
+  const saucerContent = document.querySelector('#platillos .contenido');
 
   saucers.forEach(saucer => {
     const { id, nombre, precio, categoria } = saucer;
@@ -103,12 +107,12 @@ function displaySaucers(saucers) {
     quantityDIV.appendChild(quantityInput);
     row.appendChild(quantityDIV);
 
-    content.appendChild(row);
+    saucerContent.appendChild(row);
   });
 }
 
 function updateOrder(addOrder) {
-  let { orden } = costumer;
+  const { orden } = costumer;
 
   if (addOrder.cantidad > 0) {
     if (orden.some(saucer => saucer.id === addOrder.id)) {
@@ -139,10 +143,9 @@ function updateOrder(addOrder) {
 
 function displayResume() {
   const { mesa, hora, orden } = costumer;
-  const content = document.querySelector('#resumen .contenido');
 
   const resume = document.createElement('DIV');
-  resume.classList.add('col-md-6', 'card', 'py-5', 'px-3', 'shadow');
+  resume.classList.add('col-md-6', 'card', 'py-2', 'px-3', 'shadow');
 
   const table = document.createElement('P');
   table.classList.add('fw-bold');
@@ -161,8 +164,8 @@ function displayResume() {
   timeSpan.textContent = hora;
 
   const orderH3 = document.createElement('H3');
-  orderH3.classList.add('my-4', 'text-center');
-  orderH3.textContent = 'Orden:';
+  orderH3.classList.add('my-4', TEXT_CENTER);
+  orderH3.textContent = 'Orden';
 
   table.appendChild(tableSpan);
   time.appendChild(timeSpan);
@@ -224,12 +227,14 @@ function displayResume() {
     saucerGroup.appendChild(list);
   });
 
+  resume.appendChild(orderH3);
   resume.appendChild(table);
   resume.appendChild(time);
-  resume.appendChild(orderH3);
   resume.appendChild(saucerGroup);
 
   content.appendChild(resume);
+
+  tipsForm();
 }
 
 function deleteSaucer(id) {
@@ -249,9 +254,76 @@ function deleteSaucer(id) {
   deletedInput.value = 0;
 }
 
-function clearHTML() {
-  const content = document.querySelector('#resumen .contenido');
+function tipsForm() {
+  const form = document.createElement('DIV');
+  form.classList.add('col-md-6', 'form');
 
+  const formDIV = document.createElement('DIV');
+  formDIV.classList.add('card', 'py-2', 'px-3', 'shadow');
+
+  const formH3 = document.createElement('H3');
+  formH3.classList.add('my-4', TEXT_CENTER);
+  formH3.textContent = 'Propina';
+
+  const radio5 = document.createElement('INPUT');
+  radio5.classList.add('form-check-input');
+  radio5.type = 'radio';
+  radio5.name = 'propina';
+  radio5.value = "5";
+  radio5.onclick = calculateTip;
+
+  const label5 = document.createElement('LABEL');
+  label5.classList.add('form-check-label');
+  label5.textContent = '5%';
+
+  const div5 = document.createElement('DIV');
+  div5.classList.add('form-check');
+
+  const radio10 = document.createElement('INPUT');
+  radio10.classList.add('form-check-input');
+  radio10.type = 'radio';
+  radio10.name = 'propina';
+  radio10.value = "10";
+  radio10.onclick = calculateTip;
+
+  const label10 = document.createElement('LABEL');
+  label10.classList.add('form-check-label');
+  label10.textContent = '10%';
+
+  const div10 = document.createElement('DIV');
+  div10.classList.add('form-check');
+
+  const radio15 = document.createElement('INPUT');
+  radio15.classList.add('form-check-input');
+  radio15.type = 'radio';
+  radio15.name = 'propina';
+  radio15.value = "15";
+  radio15.onclick = calculateTip;
+
+  const label15 = document.createElement('LABEL');
+  label15.classList.add('form-check-label');
+  label15.textContent = '15%';
+
+  const div15 = document.createElement('DIV');
+  div15.classList.add('form-check');
+
+  div5.appendChild(radio5);
+  div5.appendChild(label5);
+  div10.appendChild(radio10);
+  div10.appendChild(label10);
+  div15.appendChild(radio15);
+  div15.appendChild(label15);
+
+  formDIV.appendChild(formH3);
+  formDIV.appendChild(div5);
+  formDIV.appendChild(div10);
+  formDIV.appendChild(div15);
+
+  form.appendChild(formDIV);
+  content.appendChild(form);
+}
+
+function clearHTML() {
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
@@ -261,10 +333,22 @@ function calculateSubtotal(price, quantity) {
   return `$${price * quantity}`;
 }
 
+function calculateTip() {
+  const { orden } = costumer;
+  let subtotal = 0;
+
+  orden.forEach(saucer => {
+    subtotal += saucer.cantidad * saucer.precio;
+  });
+
+  const selectedTip = document.querySelector('[name="propina"]:checked').value;
+  const tip = (subtotal * parseInt(selectedTip)) / 100;
+  console.log(tip);
+}
+
 function emptyOrderMsg() {
-  const content = document.querySelector('#resumen .contenido');
   const emptyMsg = document.createElement('P');
-  emptyMsg.classList.add('text-center');
+  emptyMsg.classList.add(TEXT_CENTER);
   emptyMsg.textContent = 'No hay productos en la orden';
 
   content.appendChild(emptyMsg);
