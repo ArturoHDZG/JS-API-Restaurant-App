@@ -58,7 +58,7 @@ function displaySections() {
 }
 
 function getSaucers() {
-  const URL = 'http://localhost:4000/platillos';
+  const URL = './js/db.json';
 
   fetch(URL)
     .then(response => response.json())
@@ -67,8 +67,9 @@ function getSaucers() {
 
 function displaySaucers(saucers) {
   const saucerContent = document.querySelector('#platillos .contenido');
+  console.log(saucers);
 
-  saucers.forEach(saucer => {
+  saucers.platillos.forEach(saucer => {
     const { id, nombre, precio, categoria } = saucer;
 
     const row = document.createElement('DIV');
@@ -255,6 +256,10 @@ function deleteSaucer(id) {
 }
 
 function tipsForm() {
+  const FORM_CHECK = 'form-check';
+  const CHECK_INPUT = 'form-check-input';
+  const CHECK_LABEL = 'form-check-label';
+
   const form = document.createElement('DIV');
   form.classList.add('col-md-6', 'form');
 
@@ -266,46 +271,46 @@ function tipsForm() {
   formH3.textContent = 'Propina';
 
   const radio5 = document.createElement('INPUT');
-  radio5.classList.add('form-check-input');
+  radio5.classList.add(CHECK_INPUT);
   radio5.type = 'radio';
   radio5.name = 'propina';
-  radio5.value = "5";
+  radio5.value = '5';
   radio5.onclick = calculateTip;
 
   const label5 = document.createElement('LABEL');
-  label5.classList.add('form-check-label');
+  label5.classList.add(CHECK_LABEL);
   label5.textContent = '5%';
 
   const div5 = document.createElement('DIV');
-  div5.classList.add('form-check');
+  div5.classList.add(FORM_CHECK);
 
   const radio10 = document.createElement('INPUT');
-  radio10.classList.add('form-check-input');
+  radio10.classList.add(CHECK_INPUT);
   radio10.type = 'radio';
   radio10.name = 'propina';
-  radio10.value = "10";
+  radio10.value = '10';
   radio10.onclick = calculateTip;
 
   const label10 = document.createElement('LABEL');
-  label10.classList.add('form-check-label');
+  label10.classList.add(CHECK_LABEL);
   label10.textContent = '10%';
 
   const div10 = document.createElement('DIV');
-  div10.classList.add('form-check');
+  div10.classList.add(FORM_CHECK);
 
   const radio15 = document.createElement('INPUT');
-  radio15.classList.add('form-check-input');
+  radio15.classList.add(CHECK_INPUT);
   radio15.type = 'radio';
   radio15.name = 'propina';
-  radio15.value = "15";
+  radio15.value = '15';
   radio15.onclick = calculateTip;
 
   const label15 = document.createElement('LABEL');
-  label15.classList.add('form-check-label');
+  label15.classList.add(CHECK_LABEL);
   label15.textContent = '15%';
 
   const div15 = document.createElement('DIV');
-  div15.classList.add('form-check');
+  div15.classList.add(FORM_CHECK);
 
   div5.appendChild(radio5);
   div5.appendChild(label5);
@@ -342,8 +347,60 @@ function calculateTip() {
   });
 
   const selectedTip = document.querySelector('[name="propina"]:checked').value;
-  const tip = (subtotal * parseInt(selectedTip)) / 100;
-  console.log(tip);
+  const tip = (subtotal * parseInt(selectedTip, 10)) / 100;
+  const total = subtotal + tip;
+
+  displayTotal(subtotal, total, tip);
+}
+
+function displayTotal(subtotal, total, tip) {
+  const CLASSES_P = ['fw-bold', 'fs-4', 'mt-2'];
+  const CLASSES_SPAN = 'fw-normal';
+
+  const totalDiv = document.createElement('DIV');
+  totalDiv.classList.add('total-div', 'my-5');
+
+  const subtotalP = document.createElement('P');
+  subtotalP.classList.add(...CLASSES_P);
+  subtotalP.textContent = 'Subtotal: ';
+
+  const subtotalSpan = document.createElement('SPAN');
+  subtotalSpan.classList.add(CLASSES_SPAN);
+  subtotalSpan.textContent = `$${subtotal}`;
+
+  subtotalP.appendChild(subtotalSpan);
+
+  const tipsP = document.createElement('P');
+  tipsP.classList.add(...CLASSES_P);
+  tipsP.textContent = 'Propina: ';
+
+  const tipsSpan = document.createElement('SPAN');
+  tipsSpan.classList.add(CLASSES_SPAN);
+  tipsSpan.textContent = `$${tip}`;
+
+  tipsP.appendChild(tipsSpan);
+
+  const totalP = document.createElement('P');
+  totalP.classList.add(...CLASSES_P);
+  totalP.textContent = 'Total: ';
+
+  const totalSpan = document.createElement('SPAN');
+  totalSpan.classList.add(CLASSES_SPAN);
+  totalSpan.textContent = `$${total}`;
+
+  totalP.appendChild(totalSpan);
+
+  const clearDiv = document.querySelector('.total-div');
+  if (clearDiv) {
+    clearDiv.remove();
+  }
+
+  totalDiv.appendChild(subtotalP);
+  totalDiv.appendChild(tipsP);
+  totalDiv.appendChild(totalP);
+
+  const form = document.querySelector('.form > div');
+  form.appendChild(totalDiv);
 }
 
 function emptyOrderMsg() {
