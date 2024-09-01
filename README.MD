@@ -4,6 +4,8 @@
 
 2024-08-21: PROJECT START
 
+2024-08-31: PROJECT END
+
 This project is a learning exercise aimed at creating an efficient and user-friendly system for restaurants bill using an API. It allows users to calculate bills and tips for each consumer.
 
 ## Features

@@ -22,6 +22,11 @@ const TEXT_CENTER = 'text-center';
 newOrder.addEventListener('click', saveOrder);
 
 //* Functions
+/**
+ * Handles the process of saving a new order.
+ * Validates the form fields, creates a new order object, and displays the order sections.
+ * @returns {void}
+ */
 function saveOrder() {
   const mesa = document.querySelector('#mesa').value;
   const hora = document.querySelector('#hora').value;
@@ -52,11 +57,45 @@ function saveOrder() {
   }
 }
 
+/**
+ * Displays the sections that were previously hidden.
+ * This function is used to show the sections of the order form after a new order is saved.
+ * @returns {void}
+ * @example
+ // Before calling the function
+ //
+ <div class="d-none">
+ Section 1
+ </div>
+ //
+ <div class="d-none">
+ Section 2
+ </div>
+ displaySections();
+ // After calling the function
+ //
+ <div>
+ Section 1
+ </div>
+ //
+ <div>
+ Section 2
+ </div>
+ */
 function displaySections() {
   const hideSections = document.querySelectorAll('.d-none');
   hideSections.forEach(section => section.classList.remove('d-none'));
 }
 
+/**
+ * Fetches the list of saucers from a JSON file and displays them in the order form.
+ * @function getSaucers
+ * @returns {void}
+ * @example
+ * getSaucers();
+ // This will fetch the saucers from the specified URL, parse the JSON response,
+ // and then call the displaySaucers function with the parsed data.
+ */
 function getSaucers() {
   const URL = './js/db.json';
 
@@ -65,9 +104,22 @@ function getSaucers() {
     .then(data => displaySaucers(data));
 }
 
+/**
+ * Displays the fetched saucers in the order form.
+ * This function creates HTML elements for each saucer and appends them to the saucer content section.
+ * It also adds an event listener to the quantity input fields to update the order when the value changes.
+ * @param {Object[]} saucers - An array of saucer objects. Each saucer object has properties: id, nombre, precio, and categoria.
+ * @returns {void}
+ * @example
+ const saucers = [
+ { id: 1, nombre: 'Pizza', precio: 10, categoria: 1 },
+ { id: 2, nombre: 'Hamburguesa', precio: 5, categoria: 1 },
+ { id: 3, nombre: 'Coca-Cola', precio: 3, categoria: 2 }
+ ];
+ displaySaucers(saucers);
+ */
 function displaySaucers(saucers) {
   const saucerContent = document.querySelector('#platillos .contenido');
-  console.log(saucers);
 
   saucers.platillos.forEach(saucer => {
     const { id, nombre, precio, categoria } = saucer;
@@ -112,6 +164,18 @@ function displaySaucers(saucers) {
   });
 }
 
+/**
+ * Updates the current order with the provided saucer.
+ * If the saucer already exists in the order, it updates the quantity.
+ * If the quantity is zero, it removes the saucer from the order.
+ * @param {Object} addOrder - The saucer to add or update in the order.
+ * @param {number} addOrder.id - The unique identifier of the saucer.
+ * @param {string} addOrder.nombre - The name of the saucer.
+ * @param {number} addOrder.precio - The price of the saucer.
+ * @param {number} addOrder.categoria - The category of the saucer.
+ * @param {number} addOrder.cantidad - The quantity of the saucer in the order.
+ * @returns {void}
+ */
 function updateOrder(addOrder) {
   const { orden } = costumer;
 
@@ -142,6 +206,14 @@ function updateOrder(addOrder) {
   }
 }
 
+/**
+ * Displays the current order summary in the HTML content section.
+ * It creates HTML elements for the mesa number, order time, and each saucer in the order.
+ * It also adds a delete button for each saucer to remove it from the order.
+ *
+ * @function displayResume
+ * @returns {void}
+ */
 function displayResume() {
   const { mesa, hora, orden } = costumer;
 
@@ -238,6 +310,12 @@ function displayResume() {
   tipsForm();
 }
 
+/**
+ * Deletes a saucer from the current order.
+ *
+ * @param {number} id - The unique identifier of the saucer to delete.
+ * @returns {void}
+ */
 function deleteSaucer(id) {
   const saucerToDelete = costumer.orden.findIndex(saucer => saucer.id === id);
   costumer.orden.splice(saucerToDelete, 1);
@@ -255,6 +333,14 @@ function deleteSaucer(id) {
   deletedInput.value = 0;
 }
 
+/**
+ * Creates and appends a form to the HTML content section for selecting a tip percentage.
+ * The form includes radio buttons for 5%, 10%, and 15% tip options.
+ * Each radio button triggers the `calculateTip` function when clicked.
+ *
+ * @function tipsForm
+ * @returns {void}
+ */
 function tipsForm() {
   const FORM_CHECK = 'form-check';
   const CHECK_INPUT = 'form-check-input';
@@ -328,16 +414,52 @@ function tipsForm() {
   content.appendChild(form);
 }
 
+/**
+ * Clears the HTML content section by removing all child nodes.
+ *
+ * @function clearHTML
+ * @returns {void}
+ */
 function clearHTML() {
   while (content.firstChild) {
     content.removeChild(content.firstChild);
   }
 }
 
+/**
+ * Calculates the subtotal of an order based on the price and quantity of each saucer.
+ *
+ * @function calculateSubtotal
+ * @param {number} price - The price of a saucer.
+ * @param {number} quantity - The quantity of a saucer in the order.
+ * @returns {string} The subtotal of the order in the format '$[subtotal]'.
+ *
+ * @example
+ // Calculate the subtotal for a saucer with price 10 and quantity 2.
+ * const subtotal = calculateSubtotal(10, 2);
+ * console.log(subtotal); // Output: '$20'
+ */
 function calculateSubtotal(price, quantity) {
   return `$${price * quantity}`;
 }
 
+/**
+ * Calculates the tip amount based on the selected percentage and the order subtotal.
+ *
+ * @function calculateTip
+ * @returns {void}
+ *
+ * @example
+ // Before calling the function
+ // costumer = { orden: [...] }
+ // selectedTip = '10'
+ * calculateTip();
+ // After calling the function
+ // subtotal = 100
+ // tip = 10
+ // total = 110
+ // displayTotal(subtotal, total, tip);
+ */
 function calculateTip() {
   const { orden } = costumer;
   let subtotal = 0;
@@ -353,6 +475,14 @@ function calculateTip() {
   displayTotal(subtotal, total, tip);
 }
 
+/**
+ * Displays the total of the order, including subtotal, tip, and total.
+ *
+ * @param {number} subtotal - The subtotal of the order.
+ * @param {number} total - The total amount of the order, including subtotal and tip.
+ * @param {number} tip - The tip amount calculated based on the selected percentage.
+ * @returns {void}
+ */
 function displayTotal(subtotal, total, tip) {
   const CLASSES_P = ['fw-bold', 'fs-4', 'mt-2'];
   const CLASSES_SPAN = 'fw-normal';
@@ -403,6 +533,21 @@ function displayTotal(subtotal, total, tip) {
   form.appendChild(totalDiv);
 }
 
+/**
+ * Displays a message in the HTML content section when the order is empty.
+ *
+ * @function emptyOrderMsg
+ * @returns {void}
+ *
+ * @example
+ // Before calling the function
+ // content = <div id="content"></div>
+ * emptyOrderMsg();
+ // After calling the function
+ // content = <div id="content">
+ //   <p class="text-center">No hay productos en la orden</p>
+ // </div>
+ */
 function emptyOrderMsg() {
   const emptyMsg = document.createElement('P');
   emptyMsg.classList.add(TEXT_CENTER);
